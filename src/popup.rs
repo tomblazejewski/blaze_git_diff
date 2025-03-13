@@ -7,6 +7,7 @@ use color_eyre::eyre::Result;
 use ratatui::{
     crossterm::event::KeyEvent,
     layout::{Constraint, Rect},
+    text::{Line, Text},
     widgets::{Block, Borders, Clear, Paragraph},
 };
 
@@ -14,6 +15,7 @@ use ratatui::{
 pub struct GitDiffWindow {
     keymap: HashMap<(Mode, Vec<KeyEvent>), Action>,
     should_quit: bool,
+    output: String,
 }
 
 impl GitDiffWindow {
@@ -21,7 +23,12 @@ impl GitDiffWindow {
         GitDiffWindow {
             keymap,
             should_quit: false,
+            output: "".to_string(),
         }
+    }
+
+    pub fn attach_output(&mut self, message: String) {
+        self.output = message;
     }
 }
 
@@ -29,10 +36,10 @@ impl PluginPopUp for GitDiffWindow {
     fn draw(&mut self, frame: &mut ratatui::Frame, area: Rect) -> Result<()> {
         let area = center_rect(area, Constraint::Percentage(80), Constraint::Percentage(80));
         frame.render_widget(Clear, area);
-        let empty_paragraph = Paragraph::new("");
-        let empty_paragraph =
-            empty_paragraph.block(Block::default().borders(Borders::ALL).title("Git Diff"));
-        frame.render_widget(empty_paragraph, area);
+        let lines = self.output.lines().map(Line::from).collect::<Vec<Line>>();
+        let paragraph = Paragraph::new(Text::from(lines));
+        let paragraph = paragraph.block(Block::default().borders(Borders::ALL).title("Git Diff"));
+        frame.render_widget(paragraph, area);
         Ok(())
     }
 
