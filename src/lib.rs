@@ -5,7 +5,9 @@ use git_diff_plugin::GitDiff;
 use ratatui::crossterm::event::KeyEvent;
 
 mod commands;
+mod defaults;
 mod git_diff_plugin;
+mod popup;
 
 //Plugin getter
 #[unsafe(no_mangle)]
