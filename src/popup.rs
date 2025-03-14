@@ -7,9 +7,18 @@ use color_eyre::eyre::Result;
 use ratatui::{
     crossterm::event::KeyEvent,
     layout::{Constraint, Rect},
+    style::{Style, palette::tailwind},
     text::{Line, Text},
     widgets::{Block, Borders, Clear, Paragraph},
 };
+
+fn format_line(line: &str) -> Line {
+    Line::from(line).style(Style::default().fg(match line.chars().next().unwrap() {
+        '+' => tailwind::GREEN.c200,
+        '-' => tailwind::RED.c200,
+        _ => tailwind::WHITE,
+    }))
+}
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct GitDiffWindow {
@@ -36,7 +45,7 @@ impl PluginPopUp for GitDiffWindow {
     fn draw(&mut self, frame: &mut ratatui::Frame, area: Rect) -> Result<()> {
         let area = center_rect(area, Constraint::Percentage(80), Constraint::Percentage(80));
         frame.render_widget(Clear, area);
-        let lines = self.output.lines().map(Line::from).collect::<Vec<Line>>();
+        let lines = self.output.lines().map(format_line).collect::<Vec<Line>>();
         let paragraph = Paragraph::new(Text::from(lines));
         let paragraph = paragraph.block(Block::default().borders(Borders::ALL).title("Git Diff"));
         frame.render_widget(paragraph, area);
