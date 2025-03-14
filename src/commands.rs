@@ -40,9 +40,14 @@ pub fn open_diff_box(app: &mut App) -> Option<Action> {
 
     let output = get_diff_message(file_name.clone());
     match output {
-        Ok(output) => {
-            popup.attach_output(output);
-        }
+        Ok(output) => match output.len() {
+            0 => {
+                return Some(Action::AppAct(AppAction::DisplayMessage(
+                    "No diffs to show".to_string(),
+                )));
+            }
+            _ => popup.attach_output(output),
+        },
         Err(err) => return Some(Action::AppAct(AppAction::DisplayMessage(err.to_string()))),
     }
     app.attach_popup(popup);

@@ -47,7 +47,11 @@ impl PluginPopUp for GitDiffWindow {
         frame.render_widget(Clear, area);
         let lines = self.output.lines().map(format_line).collect::<Vec<Line>>();
         let paragraph = Paragraph::new(Text::from(lines));
-        let paragraph = paragraph.block(Block::default().borders(Borders::ALL).title("Git Diff"));
+        let paragraph = paragraph.block(
+            Block::default()
+                .borders(Borders::ALL)
+                .title(self.display_details()),
+        );
         frame.render_widget(paragraph, area);
         Ok(())
     }
